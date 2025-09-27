@@ -4,9 +4,11 @@ import Header from "./_components/Header";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
+import { UserDetailContext } from "@/context/UserDetailContext";
 
 export default function Provider({ children }: { children: React.ReactNode }) {
   const CreateUser = useMutation(api.user.CreateNewUser);
+  const [userDetail, setUserDetail] = React.useState<any>(null);
   const { user } = useUser();
   useEffect(() => {
     user && CreateNewUser();
@@ -22,8 +24,11 @@ export default function Provider({ children }: { children: React.ReactNode }) {
   };
   return (
     <div>
-      <Header />
-      {children}
+      <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
+        <Header />
+        {children}
+      </UserDetailContext.Provider>
     </div>
   );
 }
+export const useUserDetail = () => React.useContext(UserDetailContext);
