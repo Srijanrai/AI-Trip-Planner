@@ -16,6 +16,9 @@ function Hero() {
       router.push("/sign-in");
       return;
     }
+    else {
+      router.push('/create-new-trip');
+    }
   };
   const suggestions = [
     {

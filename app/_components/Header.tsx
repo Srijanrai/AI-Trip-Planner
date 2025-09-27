@@ -1,10 +1,12 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { SignInButton } from "@clerk/nextjs";
+import { SignInButton, useUser } from "@clerk/nextjs";
 
 function Header() {
+  const { user } = useUser();
   const menuOptions = [
     {
       name: "Home",
@@ -39,9 +41,15 @@ function Header() {
           );
         })}
       </div>
-      <SignInButton mode="modal">
-        <Button>Get Started</Button>
-      </SignInButton>
+      {!user ? (
+        <SignInButton mode="modal">
+          <Button>Get Started</Button>
+        </SignInButton>
+      ) : (
+        <Link href={"/create-new-trip"}>
+          <Button>Create New Trip</Button>
+        </Link>
+      )}
     </div>
   );
 }
