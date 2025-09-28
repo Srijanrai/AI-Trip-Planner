@@ -8,6 +8,8 @@ import EmptyBoxState from "./EmptyBoxState";
 import GroupSizeUI from "./GroupSizeUI";
 import BudgetUI from "./BudgetUI";
 import SelectDays from "./SelectDays";
+import InterestsUI from "./InterestsUI";
+import FinalUI from "./FinalUI";
 type Message = {
   role: string;
   content: string;
@@ -63,7 +65,7 @@ function ChatBox() {
           }}
         />
       );
-    } else if (ui == "TripDuration") {
+    } else if (ui == "tripDuration") {
       return (
         <SelectDays
           onSelectedOptions={(v: string) => {
@@ -71,6 +73,16 @@ function ChatBox() {
           }}
         />
       );
+    } else if (ui == "interests") {
+      return (
+        <InterestsUI
+          onSelectedOptions={(v: string) => {
+            handleSelctedOptions(v);
+          }}
+        />
+      );
+    } else if (ui == "final") {
+      return <FinalUI viewTrip={() => console.log("view trip")} />;
     }
     return null;
   };
