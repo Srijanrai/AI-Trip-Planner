@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { Button } from "@/components/ui/button";
 import { HeroVideoDialog } from "@/components/ui/hero-video-dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,7 +7,24 @@ import { Globe2, Landmark, Plane, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import React from "react";
-
+export const suggestions = [
+  {
+    title: "Create a trip",
+    icon: <Globe2 className="h-4 w-4 text-blue-400" />,
+  },
+  {
+    title: "Inspire me where to go",
+    icon: <Plane className="h-4 w-4 text-blue-400" />,
+  },
+  {
+    title: "Discover Hidden Gems",
+    icon: <Landmark className="h-4 w-4 text-blue-400" />,
+  },
+  {
+    title: "Adventure Destiniation",
+    icon: <Globe2 className="h-4 w-4 text-blue-400" />,
+  },
+];
 function Hero() {
   const { user } = useUser();
   const router = useRouter();
@@ -15,29 +32,11 @@ function Hero() {
     if (!user) {
       router.push("/sign-in");
       return;
-    }
-    else {
-      router.push('/create-new-trip');
+    } else {
+      router.push("/create-new-trip");
     }
   };
-  const suggestions = [
-    {
-      title: "Create a trip",
-      icon: <Globe2 className="h-4 w-4 text-blue-400" />,
-    },
-    {
-      title: "Inspire me where to go",
-      icon: <Plane className="h-4 w-4 text-blue-400" />,
-    },
-    {
-      title: "Discover Hidden Gems",
-      icon: <Landmark className="h-4 w-4 text-blue-400" />,
-    },
-    {
-      title: "Adventure Destiniation",
-      icon: <Globe2 className="h-4 w-4 text-blue-400" />,
-    },
-  ];
+
   return (
     <div className="mt-4 w-full flex justify-center">
       {/* content section*/}
@@ -60,7 +59,7 @@ function Hero() {
               size={"icon"}
               className="absolute bottom-6 right-6"
               onClick={() => {
-                onSend(); 
+                onSend();
               }}
             >
               <Send className="h-4 w-4" />

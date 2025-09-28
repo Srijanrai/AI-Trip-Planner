@@ -5,22 +5,24 @@ import { Button } from "@/components/ui/button";
 import { Loader, Send } from "lucide-react";
 import axios from "axios";
 import EmptyBoxState from "./EmptyBoxState";
+import GroupSizeUI from "./GroupSizeUI";
 type Message = {
   role: string;
   content: string;
+  ui?: string;
 };
 function ChatBox() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const onSend = async () => {
-    setUserInput("");
-    setLoading(true);
     if (!userInput?.trim()) return;
+    setLoading(true);
     const newMsg: Message = {
       role: "user",
       content: userInput,
     };
+    setUserInput("");
     setMessages((prev: Message[]) => [...prev, newMsg]);
 
     const result = await axios.post("/api/aimodel", {
@@ -32,14 +34,39 @@ function ChatBox() {
       {
         role: "assistant",
         content: result?.data?.resp,
+        ui: result?.data?.ui,
       },
     ]);
     setLoading(false);
   };
+  const handleSelctedOptions = (v: string) => {
+    setUserInput(v);
+    onSend();
+  };
+  const RenderGenerativeUI = (ui: string) => {
+    if (ui == "budget") {
+    } else if (ui == "groupSize") {
+      return (
+        <GroupSizeUI
+          onSelectedOptions={(v: string) => {
+            handleSelctedOptions(v);
+          }}
+        />
+      );
+    }
+    return null;
+  };
   return (
     <div className="h-[80vh] flex flex-col">
       <section className="flex-1 overflow-y-auto p-4">
-        {messages?.length === 0 && <EmptyBoxState />}
+        {messages?.length === 0 && (
+          <EmptyBoxState
+            onSelectOptions={(v: string) => {
+              setUserInput(v);
+              onSend();
+            }}
+          />
+        )}
         {messages.map((msg: Message, index: number) => {
           return msg.role == "user" ? (
             <div className="flex justify-end mt-2" key={index}>
@@ -51,6 +78,7 @@ function ChatBox() {
             <div className="flex justify-start mt-2" key={index}>
               <div className="max-w-lg bg-gray-100 text-black px-4 py-2 rounded-lg">
                 {msg.content}
+                {RenderGenerativeUI(msg.ui ?? "")}
               </div>
             </div>
           );
