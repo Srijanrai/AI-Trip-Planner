@@ -6,6 +6,8 @@ import { Loader, Send } from "lucide-react";
 import axios from "axios";
 import EmptyBoxState from "./EmptyBoxState";
 import GroupSizeUI from "./GroupSizeUI";
+import BudgetUI from "./BudgetUI";
+import SelectDays from "./SelectDays";
 type Message = {
   role: string;
   content: string;
@@ -44,10 +46,26 @@ function ChatBox() {
     onSend();
   };
   const RenderGenerativeUI = (ui: string) => {
+    console.log(ui);
     if (ui == "budget") {
+      return (
+        <BudgetUI
+          onSelectedOptions={(v: string) => {
+            handleSelctedOptions(v);
+          }}
+        />
+      );
     } else if (ui == "groupSize") {
       return (
         <GroupSizeUI
+          onSelectedOptions={(v: string) => {
+            handleSelctedOptions(v);
+          }}
+        />
+      );
+    } else if (ui == "TripDuration") {
+      return (
+        <SelectDays
           onSelectedOptions={(v: string) => {
             handleSelctedOptions(v);
           }}

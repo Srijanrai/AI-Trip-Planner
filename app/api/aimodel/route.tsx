@@ -16,7 +16,7 @@ Along with response also send which ui component to display for generative UI fo
 Once all required information is collected, generate and return a strict JSON response only (no explanations or extra text) with following JSON schema:
 {
 resp:'Text Resp',
-ui:'budget/groupSize/TripDuration/Final'
+ui:'budget/groupSize/tripDuration/Final'
 }`;
 export const openai = new OpenAI({
   baseURL: "https://openrouter.ai/api/v1",
