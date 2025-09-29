@@ -19,86 +19,70 @@ function ChatBox() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const onSend = async () => {
-    if (!userInput?.trim()) return;
+
+  const onSend = async (input?: string) => {
+    const messageToSend = input ?? userInput;
+    if (!messageToSend?.trim()) return;
+
     setLoading(true);
+
     const newMsg: Message = {
       role: "user",
-      content: userInput,
+      content: messageToSend,
     };
+
     setUserInput("");
-    setMessages((prev: Message[]) => [...prev, newMsg]);
+    setMessages((prev) => [...prev, newMsg]);
 
-    const result = await axios.post("/api/aimodel", {
-      messages: [...messages, newMsg],
-    });
+    try {
+      const result = await axios.post("/api/aimodel", {
+        messages: [...messages, newMsg],
+      });
 
-    setMessages((prev: Message[]) => [
-      ...prev,
-      {
-        role: "assistant",
-        content: result?.data?.resp,
-        ui: result?.data?.ui,
-      },
-    ]);
-    setLoading(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: result?.data?.resp,
+          ui: result?.data?.ui,
+        },
+      ]);
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+    } finally {
+      setLoading(false);
+    }
   };
-  const handleSelctedOptions = (v: string) => {
-    setUserInput(v);
-    onSend();
+
+  const handleSelectedOptions = (v: string) => {
+    setUserInput(v); 
+    onSend(v);
   };
+
   const RenderGenerativeUI = (ui: string) => {
-    console.log(ui);
-    if (ui == "budget") {
-      return (
-        <BudgetUI
-          onSelectedOptions={(v: string) => {
-            handleSelctedOptions(v);
-          }}
-        />
-      );
-    } else if (ui == "groupSize") {
-      return (
-        <GroupSizeUI
-          onSelectedOptions={(v: string) => {
-            handleSelctedOptions(v);
-          }}
-        />
-      );
-    } else if (ui == "tripDuration") {
-      return (
-        <SelectDays
-          onSelectedOptions={(v: string) => {
-            handleSelctedOptions(v);
-          }}
-        />
-      );
-    } else if (ui == "interests") {
-      return (
-        <InterestsUI
-          onSelectedOptions={(v: string) => {
-            handleSelctedOptions(v);
-          }}
-        />
-      );
-    } else if (ui == "final") {
+    if (ui === "budget") {
+      return <BudgetUI onSelectedOptions={handleSelectedOptions} />;
+    } else if (ui === "groupSize") {
+      return <GroupSizeUI onSelectedOptions={handleSelectedOptions} />;
+    } else if (ui === "tripDuration") {
+      return <SelectDays onSelectedOptions={handleSelectedOptions} />;
+    } else if (ui === "interests") {
+      return <InterestsUI onSelectedOptions={handleSelectedOptions} />;
+    } else if (ui === "final") {
       return <FinalUI viewTrip={() => console.log("view trip")} />;
     }
     return null;
   };
+
   return (
     <div className="h-[80vh] flex flex-col">
       <section className="flex-1 overflow-y-auto p-4">
-        {messages?.length === 0 && (
-          <EmptyBoxState
-            onSelectOptions={(v: string) => {
-              setUserInput(v);
-              onSend();
-            }}
-          />
+        {messages.length === 0 && (
+          <EmptyBoxState onSelectOptions={handleSelectedOptions} />
         )}
+
         {messages.map((msg: Message, index: number) => {
-          return msg.role == "user" ? (
+          return msg.role === "user" ? (
             <div className="flex justify-end mt-2" key={index}>
               <div className="max-w-lg bg-primary text-white px-4 py-2 rounded-lg">
                 {msg.content}
@@ -130,11 +114,9 @@ function ChatBox() {
             className="w-full h-28 bg-transparent border-none focus-visible:ring-0 shadow-none resize-none"
           />
           <Button
-            size={"icon"}
+            size="icon"
             className="absolute bottom-6 right-6"
-            onClick={() => {
-              onSend();
-            }}
+            onClick={() => onSend()}
           >
             <Send className="h-4 w-4" />
           </Button>
