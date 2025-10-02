@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Loader, Send } from "lucide-react";
@@ -15,10 +15,34 @@ type Message = {
   content: string;
   ui?: string;
 };
+export type TripInfo = {
+  budget: string;
+  destination: string;
+  duration: string;
+  group_size: string;
+  origin: string;
+  hotels: any;
+  itinerary: any;
+};
 function ChatBox() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [isFinal, setIsFinal] = useState(false);
+  const [tripDetail, setTripDetail] = useState<TripInfo>();
+  useEffect(() => {
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg?.ui === "final") {
+      setIsFinal(true);
+      setUserInput("Ok, great");
+    }
+  }, [messages]);
+  useEffect(() => {
+    if (isFinal && userInput) {
+      setUserInput("ok,great");
+      onSend();
+    }
+  }, [isFinal]);
 
   const onSend = async (input?: string) => {
     const messageToSend = input ?? userInput;
@@ -37,16 +61,22 @@ function ChatBox() {
     try {
       const result = await axios.post("/api/aimodel", {
         messages: [...messages, newMsg],
+        isFinal: isFinal,
       });
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: result?.data?.resp,
-          ui: result?.data?.ui,
-        },
-      ]);
+      console.log("trip", result.data);
+      !isFinal &&
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: result?.data?.resp,
+            ui: result?.data?.ui,
+          },
+        ]);
+      if (isFinal) {
+        setTripDetail(result?.data?.trip_plan);
+      }
     } catch (error) {
       console.error("Error fetching AI response:", error);
     } finally {
@@ -55,7 +85,7 @@ function ChatBox() {
   };
 
   const handleSelectedOptions = (v: string) => {
-    setUserInput(v); 
+    setUserInput(v);
     onSend(v);
   };
 
@@ -69,7 +99,12 @@ function ChatBox() {
     } else if (ui === "interests") {
       return <InterestsUI onSelectedOptions={handleSelectedOptions} />;
     } else if (ui === "final") {
-      return <FinalUI viewTrip={() => console.log("view trip")} />;
+      return (
+        <FinalUI
+          viewTrip={() => console.log("view trip")}
+          disable={!tripDetail}
+        />
+      );
     }
     return null;
   };
