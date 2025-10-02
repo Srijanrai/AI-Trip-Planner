@@ -10,6 +10,11 @@ import BudgetUI from "./BudgetUI";
 import SelectDays from "./SelectDays";
 import InterestsUI from "./InterestsUI";
 import FinalUI from "./FinalUI";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useUserDetail } from "@/app/provider";
+import { v4 as uuidv4 } from "uuid";
+
 type Message = {
   role: string;
   content: string;
@@ -30,6 +35,8 @@ function ChatBox() {
   const [loading, setLoading] = useState(false);
   const [isFinal, setIsFinal] = useState(false);
   const [tripDetail, setTripDetail] = useState<TripInfo>();
+  const SaveTripDetail = useMutation(api.tripDetail.CreateTripDetail);
+  const { userDetail, setUserDetail } = useUserDetail();
   useEffect(() => {
     const lastMsg = messages[messages.length - 1];
     if (lastMsg?.ui === "final") {
@@ -76,6 +83,12 @@ function ChatBox() {
         ]);
       if (isFinal) {
         setTripDetail(result?.data?.trip_plan);
+        const tripId = uuidv4();
+        await SaveTripDetail({
+          tripDetail: result?.data?.trip_plan,
+          tripId: tripId,
+          uid: userDetail?._id,
+        });
       }
     } catch (error) {
       console.error("Error fetching AI response:", error);

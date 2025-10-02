@@ -20,6 +20,7 @@ export default function Provider({ children }: { children: React.ReactNode }) {
         name: user?.fullName ?? "",
         imageUrl: user?.imageUrl ?? "",
       });
+      setUserDetail(result);
     }
   };
   return (
