@@ -4,6 +4,8 @@ import { Timeline } from "@/components/ui/timeline";
 import Link from "next/link";
 import { Clock, ExternalLink, Star, Ticket, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import HotelCardItem from "./HotelCardItem";
+import PlaceCardItems from "./PlaceCardItems";
 const TRIP_DATA = {
   destination: "Lucknow",
   duration: "3 days",
@@ -200,35 +202,7 @@ function Itinerary() {
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {TRIP_DATA?.hotels?.map((hotel, index) => {
-            return (
-              <div key={index} className="flex flex-col gap-1">
-                <Image
-                  className="rounded-xl shadow object-cover mb-2"
-                  src={hotel?.hotel_image_url}
-                  alt="hotel-image"
-                  width={400}
-                  height={200}
-                />
-                <h2 className="font-semibold text-lg">{hotel.hotel_name}</h2>
-                <h2 className="text-gray-500">{hotel.hotel_address}</h2>
-                <div className="flex justify-between">
-                  <p className="flex gap-2 text-green-500">
-                    <Wallet />
-                    {hotel?.price_per_night}
-                  </p>
-                  <p className="flex gap-2 text-yellow-500">
-                    <Star />
-                    {hotel?.rating}
-                  </p>
-                </div>
-                <Button variant={"outline"} className="mt-1">
-                  View{" "}
-                </Button>
-                {/* <p className="line-clamp-2 text-gray-500">
-                  {hotel?.description}
-                </p> */}
-              </div>
-            );
+            return <HotelCardItem hotel={hotel} />;
           })}
         </div>
       ),
@@ -240,43 +214,7 @@ function Itinerary() {
           <p>Best Time :{dayData?.best_time_to_visit_day}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {dayData?.activities.map((activity, index) => {
-              return (
-                <div key={index}>
-                  <Image
-                    src={activity.place_image_url}
-                    alt="image"
-                    height={200}
-                    width={400}
-                    className="object-cover rounded-xl "
-                  />
-                  <h2 className="font-semibold text-lg">
-                    {activity.place_name}
-                  </h2>
-                  <p className="text-gray-500 line-clamp-2">
-                    {activity.place_details}
-                  </p>
-                  <h2 className="flex flex-row text-blue-400 gap-2">
-                    <Ticket />
-                    {activity.ticket_pricing}
-                  </h2>
-                  <p className="flex flex-row text-orange-400 gap-2">
-                    <Clock />
-                    {activity?.best_time_to_visit}
-                  </p>
-                  <Link
-                    href={
-                      "https://www.google.com/maps/search/?api=1&query=" +
-                      activity?.place_name
-                    }
-                    target="_blank"
-                  >
-                    <Button variant={"outline"} className="w-full mt-2">
-                      <ExternalLink />
-                      View
-                    </Button>
-                  </Link>
-                </div>
-              );
+              return <PlaceCardItems key={index} activity={activity} />;
             })}
           </div>
         </div>
